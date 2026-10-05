@@ -1,0 +1,41 @@
+{
+  "name": "@mus-odoo/ai-gateway",
+  "version": "0.1.0",
+  "description": "AI Abstraction Layer for multi-provider LLM integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mus-odoo/Ai-Gateway.git"
+  },
+  "keywords": [
+    "ai",
+    "gateway",
+    "llm",
+    "openai",
+    "minimax",
+    "abstraction"
+  ],
+  "author": "mus-odoo",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.4.0"
+  }
+}
