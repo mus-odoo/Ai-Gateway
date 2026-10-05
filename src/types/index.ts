@@ -1,3 +1,41 @@
+// ============================================
+// الأنواع الأساسية لطبقة التجريد
+// ============================================
+
+/**
+ * أنواع المهام المدعومة
+ * كل منصة تستخدم هذه الأنواع لتحديد نوع العملية
+ */
+export type TaskType =
+  | 'risk_analysis'           // تحليل المخاطر (إدراك)
+  | 'content_generation'      // توليد المحتوى
+  | 'summarization'           // التلخيص
+  | 'classification'          // التصنيف
+  | 'code_generation'         // توليد الكود
+  | 'translation'             // الترجمة
+  | 'recommendation'          // التوصيات
+  | 'data_extraction'         // استخراج البيانات
+  | 'training_content'        // محتوى تدريبي (فرح)
+  | 'islamic_content_analysis'; // تحليل المحتوى الإسلامي (الحمد)
+
+/**
+ * مستويات حساسية البيانات
+ */
+export type DataSensitivity =
+  | 'public'        // عام
+  | 'internal'      // داخلي
+  | 'confidential'  // سري
+  | 'sensitive'     // حساس
+  | 'sovereign';    // سيادي
+
+/**
+ * عمق التفكير (لنماذج MiniMax)
+ */
+export type ThinkingDepth = 'low' | 'medium' | 'high' | 'xhigh' | 'max';
+
+/**
+ * طلب التوليد
+ */
 export interface GenerateRequest {
   taskType: TaskType;
   prompt: string;
@@ -5,11 +43,14 @@ export interface GenerateRequest {
   context?: Record<string, unknown>;
   maxTokens?: number;
   temperature?: number;
-  thinkingDepth?: 'low' | 'medium' | 'high' | 'xhigh' | 'max';
-  dataSensitivity: 'public' | 'internal' | 'confidential' | 'sensitive' | 'sovereign';
+  thinkingDepth?: ThinkingDepth;
+  dataSensitivity: DataSensitivity;
   requiresZeroRetention?: boolean;
 }
 
+/**
+ * استجابة التوليد
+ */
 export interface GenerateResponse {
   content: string;
   provider: string;
@@ -24,14 +65,45 @@ export interface GenerateResponse {
   confidence?: number;
 }
 
-export type TaskType =
-  | 'risk_analysis'
-  | 'content_generation'
-  | 'summarization'
-  | 'classification'
-  | 'code_generation'
-  | 'translation'
-  | 'recommendation'
-  | 'data_extraction'
-  | 'training_content'
-  | 'islamic_content_analysis';
+/**
+ * تقدير التكلفة
+ */
+export interface CostEstimate {
+  estimatedCostUsd: number;
+  estimatedTokens: number;
+}
+
+/**
+ * قواعد التوجيه
+ */
+export interface RoutingRules {
+  defaultProvider: Record<TaskType, string>;
+  sensitivityRules: Record<DataSensitivity, string[]>;
+  platformRules: Record<string, PlatformRule>;
+}
+
+export interface PlatformRule {
+  preferredProvider: string;
+  fallbackProvider: string;
+  monthlyBudgetUsd: number;
+}
+
+/**
+ * حدود التكلفة
+ */
+export interface CostLimits {
+  globalMonthlyLimitUsd: number;
+  platformLimits: Record<string, number>;
+}
+
+/**
+ * سجل التكلفة
+ */
+export interface CostRecord {
+  platform: string;
+  taskType: TaskType;
+  provider: string;
+  cost: number;
+  tokens: number;
+  timestamp: Date;
+}
