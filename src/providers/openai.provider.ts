@@ -16,9 +16,9 @@ interface OpenAIConfig {
  * السعر لكل رمز واحد بالدولار
  */
 const OPENAI_PRICING: Record<string, { input: number; output: number }> = {
-  'gpt-6-astra-mini': { input: 0.0000005, output: 0.000002 },
-  'gpt-6-astra': { input: 0.0000025, output: 0.00001 },
-  'gpt-6.1-sol': { input: 0.000003, output: 0.000012 },
+  'gpt-4o-mini': { input: 0.00000015, output: 0.0000006 },
+  'gpt-4o': { input: 0.0000025, output: 0.00001 },
+  'gpt-4-turbo': { input: 0.00001, output: 0.00003 },
 };
 
 export class OpenAIProvider extends BaseProvider {
@@ -31,7 +31,7 @@ export class OpenAIProvider extends BaseProvider {
     super();
     this.apiKey = config.apiKey;
     this.baseUrl = config.baseUrl || 'https://api.openai.com/v1';
-    this.defaultModel = config.defaultModel || 'gpt-6-astra';
+    this.defaultModel = config.defaultModel || 'gpt-4o-mini';
   }
 
   async isAvailable(): Promise<boolean> {
@@ -128,27 +128,27 @@ export class OpenAIProvider extends BaseProvider {
    * اختيار النموذج بناءً على المهمة وحساسية البيانات
    */
   private selectModel(request: GenerateRequest): string {
-    // البيانات السيادية تحتاج النموذج الأكثر أماناً
-    if (request.dataSensitivity === 'sovereign' || request.requiresZeroRetention) {
-      return 'gpt-6.1-sol';
-    }
-
-    // توليد الكود يحتاج النموذج الأقوى
-    if (request.taskType === 'code_generation' || request.taskType === 'risk_analysis') {
-      return 'gpt-6.1-sol';
-    }
-
-    // المهام البسيطة تستخدم النموذج الأخف
-    if (
-      request.taskType === 'summarization' ||
-      request.taskType === 'translation' ||
-      request.taskType === 'classification'
-    ) {
-      return 'gpt-6-astra-mini';
-    }
-
-    return this.defaultModel;
+  // البيانات السيادية تحتاج النموذج الأكثر أماناً
+  if (request.dataSensitivity === 'sovereign' || request.requiresZeroRetention) {
+    return 'gpt-4o';
   }
+
+  // توليد الكود وتحليل المخاطر يحتاج النموذج الأقوى
+  if (request.taskType === 'code_generation' || request.taskType === 'risk_analysis') {
+    return 'gpt-4o';
+  }
+
+  // المهام البسيطة تستخدم النموذج الأرخص
+  if (
+    request.taskType === 'summarization' ||
+    request.taskType === 'translation' ||
+    request.taskType === 'classification'
+  ) {
+    return 'gpt-4o-mini';
+  }
+
+  return 'gpt-4o-mini';
+}
 
   private calculateCost(
     model: string,

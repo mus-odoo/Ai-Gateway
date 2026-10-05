@@ -7,6 +7,7 @@ export { AIGateway } from './gateway';
 export type { AIGatewayConfig } from './gateway';
 
 // المزودون
+export { MockProvider } from './providers/mock.provider';
 export { OpenAIProvider } from './providers/openai.provider';
 export { MiniMaxProvider } from './providers/minimax.provider';
 export { BaseProvider, ProviderError } from './providers/base.provider';

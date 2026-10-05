@@ -1,19 +1,18 @@
 import { AIProvider } from './base.provider';
 import { OpenAIProvider } from './openai.provider';
 import { MiniMaxProvider } from './minimax.provider';
+import { MockProvider } from './mock.provider';
+const env = (globalThis as typeof globalThis & {
+  process?: { env?: Record<string, string | undefined> };
+}).process?.env ?? {};
+
 
 export interface ProviderFactoryConfig {
-  openai?: {
-    apiKey: string;
-    baseUrl?: string;
-    enabled?: boolean;
-  };
-  minimax?: {
-    apiKey: string;
-    baseUrl?: string;
-    enabled?: boolean;
-  };
+  openai?: { apiKey: string; baseUrl?: string; enabled?: boolean };
+  minimax?: { apiKey: string; baseUrl?: string; enabled?: boolean };
+  mock?: { enabled?: boolean };  // ← جديد
 }
+
 
 /**
  * بناء المزودين من إعدادات
@@ -38,6 +37,9 @@ export function createProviders(config: ProviderFactoryConfig): AIProvider[] {
       }),
     );
   }
+  if (config.mock?.enabled !== false) {
+    providers.push(new MockProvider());
+  }
 
   if (providers.length === 0) {
     throw new Error('No AI providers configured. Please check your environment variables.');
@@ -51,15 +53,18 @@ export function createProviders(config: ProviderFactoryConfig): AIProvider[] {
  */
 export function createProvidersFromEnv(): AIProvider[] {
   return createProviders({
+    mock: {
+      enabled: env.MOCK_ENABLED === 'true',
+    },
     openai: {
-      apiKey: process.env.OPENAI_API_KEY || '',
-      baseUrl: process.env.OPENAI_BASE_URL,
-      enabled: process.env.OPENAI_ENABLED !== 'false',
+      apiKey: env.OPENAI_API_KEY || '',
+      baseUrl: env.OPENAI_BASE_URL,
+      enabled: env.OPENAI_ENABLED !== 'false',
     },
     minimax: {
-      apiKey: process.env.MINIMAX_API_KEY || '',
-      baseUrl: process.env.MINIMAX_BASE_URL,
-      enabled: process.env.MINIMAX_ENABLED !== 'false',
+      apiKey: env.MINIMAX_API_KEY || '',
+      baseUrl: env.MINIMAX_BASE_URL,
+      enabled: env.MINIMAX_ENABLED !== 'false',
     },
   });
 }
